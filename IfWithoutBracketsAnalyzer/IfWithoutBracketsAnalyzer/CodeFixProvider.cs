@@ -18,7 +18,7 @@ namespace IfWithoutBracketsAnalyzer
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(IfWithoutBracketsAnalyzerCodeFixProvider)), Shared]
     public class IfWithoutBracketsAnalyzerCodeFixProvider : CodeFixProvider
     {
-        private const string title = "Make If with brackets";
+        private const string title = "Add brackets to If statement";
 
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
@@ -41,7 +41,7 @@ namespace IfWithoutBracketsAnalyzer
                 return;
             }
 
-            var action = CodeAction.Create(title, c => AddBrackest(root, expression, context));
+            var action = CodeAction.Create(title, cancellationToken => this.AddBrackest(root, expression, context));
 
             context.RegisterCodeFix(action, context.Diagnostics.First());
         }

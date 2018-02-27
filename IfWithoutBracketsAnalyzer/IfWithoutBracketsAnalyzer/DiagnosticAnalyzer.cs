@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Threading;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -15,14 +12,24 @@ namespace IfWithoutBracketsAnalyzer
     {
         public const string DiagnosticId = "IfWithoutBracketsAnalyzer";
 
-        private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.AnalyzerTitle), Resources.ResourceManager, typeof(Resources));
-        private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.AnalyzerMessageFormat), Resources.ResourceManager, typeof(Resources));
-        private static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.AnalyzerDescription), Resources.ResourceManager, typeof(Resources));
-        private const string Category = "Naming";
+        private const string Category = "Style";
 
-        private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
+        private static readonly LocalizableString Title =
+            new LocalizableResourceString(nameof(Resources.AnalyzerTitle), Resources.ResourceManager, typeof(Resources));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        private static readonly LocalizableString MessageFormat =
+            new LocalizableResourceString(nameof(Resources.AnalyzerMessageFormat), Resources.ResourceManager, typeof(Resources));
+
+        private static readonly LocalizableString Description =
+            new LocalizableResourceString(nameof(Resources.AnalyzerDescription), Resources.ResourceManager, typeof(Resources));
+
+        private static readonly DiagnosticDescriptor Rule =
+            new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
+
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
+        {
+            get { return ImmutableArray.Create(Rule); }
+        }
 
         public override void Initialize(AnalysisContext context)
         {
@@ -31,13 +38,13 @@ namespace IfWithoutBracketsAnalyzer
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext nodeContext)
         {
-            var ifStatementSyntax = nodeContext.Node as IfStatementSyntax;
+            var ifStatement = nodeContext.Node as IfStatementSyntax;
 
-            if (ifStatementSyntax?.Statement is ExpressionStatementSyntax)
+            if (ifStatement != null &&  ifStatement.Statement is ExpressionStatementSyntax)
             {
-                var diagnostic = Diagnostic.Create(Rule, ifStatementSyntax.Statement.GetLocation());
+                var diagnostic = Diagnostic.Create(Rule, ifStatement.Statement.GetLocation());
                 nodeContext.ReportDiagnostic(diagnostic);
-            }            
+            }
         }
     }
 }
